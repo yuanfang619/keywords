@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}分析结果{% endblock %}
+
+{% block head %} 
+{{ super() }} 
+<script language="javascript" src="http://lib.sinaapp.com/js/jquery/2.0.3/jquery-2.0.3.min.js"></script>
+<script language="javascript">
+<!--
+var str={{ keywords|safe }};
+$(document).ready(function(){
+	str=eval('(' + str + ')');
+	$.each(str,function(i,data){
+		var text="";
+		text="<tr><td width='60'>"+i+"</td><td width='60'>"+data.count+"</td><td width='60'>"+data.user_num+"</td><td width='100'>"+data.weight+"</td></tr>";
+		$("#tab").append(text);
+	});
+	
+	
+});
+-->
+</script>
+{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>关键词提取及关系网络</h1>
+</div>
+<div style="width:500px">
+    <h3>提取结果：</h3>
+	<table id="tab" class="table">
+		<tr>
+                    <td>关键词</td><td>词频</td><td>提及人数</td><td>权重</td>
+                </tr>
+	</table>
+   
+</div>
+{% endblock %}
