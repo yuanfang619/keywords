@@ -55,17 +55,17 @@ def index():
         if form.upload.data:
             filedata = form.upload.data
             text = "".join([line.decode(chardet.detect(line)['encoding']) for line in filedata.readlines()])
-            session['text'] = text
+            #session['text'] = text
             print secure_filename(form.upload.data.filename)
             #form.upload.data.save()
         else:
-            session['text'] = form.text.data
-        session['num'] = form.num.data
-        session['method'] = form.method.data
+            text = form.text.data
+        num = form.num.data
+        method = form.method.data
         #num = session['text'].count('\n') + 1
-        keywords = analysis.text_processing(session.get('text'), method=session['method'], num=session['num'], pos=['n'])
-        session['keywords'] = "'" + json.dumps(keywords, ensure_ascii=False) + "'"
-        return redirect(url_for('result', resultstr=session.get('keywords')))
+        keywords = analysis.text_processing(text, method=method, num=num, pos=['n'])
+        result = "'" + json.dumps(keywords, ensure_ascii=False) + "'"
+        return redirect(url_for('result', resultstr=result))
     return render_template('index.html', form=form)
 
 @app.route('/result/<resultstr>', methods=['GET', 'POST'])
