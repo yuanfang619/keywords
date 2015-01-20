@@ -6,11 +6,11 @@
 
 {% block page_content %}
 <div class="page-header">
-    <h1>问卷开放题文本分析小工具（演示版）</h1>
+    <h1 style="font-family:Microsoft YaHei">问卷开放题文本分析小工具（演示版）</h1>
 </div>
     <p>说明：可以直接填写原话文本或上传文件，一行代表一名被访者的回答，文件只能是txt格式的文本文件，程序会抽取关键词并计算每个关键词的权重、词频和提及人数。此应用为演示版，请不要上传大于50行的文件。</p>
 <div>
-    {{ wtf.quick_form(form, enctype="multipart/form-data") }}
+    {{ wtf.quick_form(form, action="/result/", enctype="multipart/form-data") }}
 </div>
 
 {% endblock %}

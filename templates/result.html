@@ -4,23 +4,9 @@
 {% block title %}关键词抽取结果{% endblock %}
 
 {% block head %} 
-{{ super() }} 
+{{ super() }}
 <script language="javascript" src="http://lib.sinaapp.com/js/jquery/2.0.3/jquery-2.0.3.min.js"></script>
-<script language="javascript">
-<!--
-var str={{ keywords|safe }};
-$(document).ready(function(){
-	str=eval('(' + str + ')');
-	$.each(str,function(i,data){
-		var text="";
-		text="<tr><td width='60'>"+i+"</td><td width='60'>"+data.count+"</td><td width='60'>"+data.user_num+"</td><td width='100'>"+data.weight+"</td></tr>";
-		$("#tab").append(text);
-	});
-	
-	
-});
--->
-</script>
+<script language="javascript" src="/static/echarts-all.js"></script>
 {% endblock %}
 
 {% block page_content %}
@@ -36,4 +22,107 @@ $(document).ready(function(){
 	</table>
    
 </div>
+<div id="network" style="width:800px;height:600px"></div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{bootstrap_find_resource('js/bootstrap.js', cdn='bootstrap')}}"></script>
+<script language="javascript">
+<!--
+/**************************************json*************************************/
+var str={{ keywords|safe }};
+$(document).ready(function(){
+	str=eval('(' + str + ')');
+	$.each(str,function(i,data){
+		var text="";
+		text="<tr><td width='60'>"+i+"</td><td width='60'>"+data.count+"</td><td width='60'>"+data.user_num+"</td><td width='100'>"+data.weight+"</td></tr>";
+		$("#tab").append(text);
+	});
+	
+	
+});
+/**************************************network*************************************/
+var myChart = echarts.init(document.getElementById('network'));
+option = {
+    title : {
+        text: '关键词共现关系',
+        subtext: '被访者同时提及',
+        x:'right',
+        y:'bottom'
+    },
+    tooltip : {
+        trigger: 'item',
+        formatter: '{a} : {b}'
+    },
+    toolbox: {
+        show : true,
+        feature : {
+            restore : {show: true},
+            magicType: {show: true, type: ['force', 'chord']},
+            saveAsImage : {show: true}
+        }
+    },
+    legend: {
+        x: 'left',
+        data:[]
+    },
+    series : [
+        {
+            type:'force',
+            name : "共现关系",
+            ribbonType: false,
+            categories : [
+                {
+                    name: '关键词'
+                }
+            ],
+            itemStyle: {
+                normal: {
+                    label: {
+                        show: true,
+                        textStyle: {
+                            color: '#333'
+                        }
+                    },
+                    nodeStyle : {
+                        brushType : 'both',
+                        borderColor : 'rgba(255,215,0,0.4)',
+                        borderWidth : 1
+                    },
+                    linkStyle: {
+                        type: 'curve'
+                    }
+                },
+                emphasis: {
+                    label: {
+                        show: false
+                        // textStyle: null      // 默认使用全局文本样式，详见TEXTSTYLE
+                    }
+                }
+            },
+            useWorker: false,
+            minRadius : 15,
+            maxRadius : 25,
+            gravity: 1.1,
+            scaling: 1.1,
+            roam: 'move',
+            nodes:[
+                {% for node in vertice[:-1] %}
+                {category:0, name: '{{ node }}'},
+                {% endfor %}
+                {category:0, name: '{{ vertice[-1] }}'}
+            ],
+            links : [
+              {% for edge, value in network.items()[:-1] %}
+              {source : '{{ edge[:edge.find('|')] }}', target : '{{ edge[edge.find('|')+1:] }}', weight : {{ value }}, itemStyle: {normal: {lineWidth: {{ value }}}}},
+              {% endfor %}
+              {source : '{{ network.keys()[-1][:network.keys()[-1].find('|')] }}', target : '{{ network.keys()[-1][network.keys()[-1].find('|')+1:] }}', weight : {{ network.values()[-1] }}, itemStyle: {normal: {lineWidth: {{ network.values()[-1] }}}}}
+            ]
+        }
+    ]
+};
+
+myChart.setOption(option);
+-->
+</script>
 {% endblock %}

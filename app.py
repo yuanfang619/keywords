@@ -2,7 +2,7 @@
 
 import sys
 import os
-from flask import Flask, render_template, session, redirect, url_for
+from flask import Flask, render_template, session, redirect, url_for, request
 from flask.ext.script import Manager
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.wtf import Form
@@ -13,10 +13,16 @@ from werkzeug import secure_filename
 import analysis
 import json
 import chardet
+import cPickle as pickle
+import hashlib
+import random
+import string
+import time
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
+ALLOWED_EXTENSIONS = set(['txt'])
 
 app = Flask(__name__)
 manager = Manager(app)
@@ -37,6 +43,19 @@ class TextForm(Form):
     #pos_ad = BooleanField('副词')
     submit = SubmitField('提交')
 
+def get_salt(chars = string.letters + string.digits):
+    return "".join([random.choice(chars) for t in range(16)])
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+def generate_flag():
+    salt = get_salt()
+    now = str(int(time.time() * 1000000))
+    flag = hashlib.md5(now+salt).hexdigest()
+    return flag
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
@@ -47,30 +66,29 @@ def inter_server_error(e):
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    text = None
-    filedata = None
     form = TextForm()
-    keywords = {}
-    if form.validate_on_submit():
-        if form.upload.data:
-            filedata = form.upload.data
-            text = "".join([line.decode(chardet.detect(line)['encoding']) for line in filedata.readlines()])
-            #session['text'] = text
-            print secure_filename(form.upload.data.filename)
-            #form.upload.data.save()
-        else:
-            text = form.text.data
-        num = form.num.data
-        method = form.method.data
-        #num = session['text'].count('\n') + 1
-        keywords = analysis.text_processing(text, method=method, num=num, pos=['n'])
-        result = "'" + json.dumps(keywords, ensure_ascii=False) + "'"
-        return redirect(url_for('result', resultstr=result))
     return render_template('index.html', form=form)
 
-@app.route('/result/<resultstr>', methods=['GET', 'POST'])
-def result(resultstr):
-    return render_template('result.html', keywords=resultstr)
+#@app.route('/result/<flag>', methods=['GET', 'POST'])
+@app.route('/result/', methods=['GET', 'POST'])
+def result():
+    if request.method == 'POST':
+        uploadfile = request.files['upload']
+        if uploadfile:
+            if allowed_file(uploadfile.filename):
+                text = "".join([line.decode(chardet.detect(line)['encoding']) for line in uploadfile.readlines()])
+            else:
+                return rediect(url_for('index'))
+        else:
+            text = request.form['text']
+            if not text:
+                return rediect(url_for('index'))
+        num = int(request.form['num'])
+        method = request.form['method']
+        keywords, network, vertice = analysis.text_processing(text, method=method, num=num, pos=['n'])
+        result = "'" + json.dumps(keywords, ensure_ascii=False) + "'"
+        print result
+    return render_template('result.html', keywords=result, vertice=vertice, network=network)
 
 if __name__ == '__main__':
     manager.run()

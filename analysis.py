@@ -63,19 +63,21 @@ def generate_network(words_list):
                 dst.append(s2[j])
                 j += 1
             i += 1
-    vertice = list(set(src))
-    return vertice, src, dst
+    vertice = list(set(src + dst))
+    network = {}
+    i = 0
+    while i < len(src):
+        key = src[i] + "|" + dst[i]
+        network[key] = network.get(key, 0) + 1
+        i = i + 1
+    return network, vertice
 
 def text_processing(text, method='tfidf', num=10, pos=['ns', 'n', 'vn', 'v']):
-    kw = extract_keywords(text, method='tfidf', num=text.count('\n'), pos=pos)
+    kw = extract_keywords(text.strip(), method='tfidf', num=num, pos=pos)
     filter_list = filter_words(kw, text)
     kw_count, kw_user = keywords_count(kw, filter_list, text)
     keywords = merge_keywords(kw, kw_count, kw_user)
-    print " ".join(keywords.keys())
-    return keywords
-
-
-
-
-
-
+    filter_list_unique = [list(set(li)) for li in filter_list]
+    networks, vertice = generate_network(filter_list_unique)
+    #print " ".join(keywords.keys())
+    return keywords, networks, vertice
