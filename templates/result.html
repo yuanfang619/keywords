@@ -23,6 +23,9 @@
    
 </div>
 <div id="network" style="width:80%;height:600px"></div>
+重力：<input type="text" id="g" name="g" value="1.1"/><br/>
+缩放尺度：<input type="text" id="s" name="s" value="1.1"/><br/>
+<input type="button" id="btn" name="btn" value="刷新"/>
 {% endblock %}
 
 {% block scripts %}
@@ -39,9 +42,16 @@ $(document).ready(function(){
 		$("#tab").append(text);
 	});
 	
+	draw();
 	
+	$("#btn").click(function(){
+		draw();
+	});
 });
 /**************************************network*************************************/
+function draw(){
+var g=$("#g").val();
+var s=$("#s").val();
 var myChart = echarts.init(document.getElementById('network'));
 option = {
     title : {
@@ -103,8 +113,8 @@ option = {
             useWorker: false,
             minRadius : 15,
             maxRadius : 25,
-            gravity: 0.8,
-            scaling: 1.1,
+            gravity: g,
+            scaling: s,
             roam: 'move',
             nodes:[
                 {% for node in vertice[:-1] %}
@@ -123,6 +133,7 @@ option = {
 };
 
 myChart.setOption(option);
+}
 -->
 </script>
 {% endblock %}
