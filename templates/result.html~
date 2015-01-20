@@ -71,6 +71,7 @@ option = {
             type:'force',
             name : "共现关系",
             ribbonType: false,
+            gravity: 0.7,
             categories : [
                 {
                     name: '关键词'
@@ -103,7 +104,7 @@ option = {
             useWorker: false,
             minRadius : 15,
             maxRadius : 25,
-            gravity: 0.8,
+            gravity: 1.1,
             scaling: 1.1,
             roam: 'move',
             nodes:[

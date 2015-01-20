@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import sys
-import os
+#import os
 from flask import Flask, render_template, session, redirect, url_for, request
 from flask.ext.script import Manager
 from flask.ext.bootstrap import Bootstrap
@@ -20,19 +20,19 @@ import time
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
-UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
+#UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
 ALLOWED_EXTENSIONS = set(['txt'])
 
 app = Flask(__name__)
 manager = Manager(app)
 bootstrap = Bootstrap(app)
 app.config['SECRET_KEY'] = 'hard to guess string'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+#app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 class TextForm(Form):
     text = TextAreaField('请输入需要提取关键词的文本')
-    upload = FileField('文件上传')
-    num = IntegerField('关键词个数')
+    upload = FileField('或上传文本文件')
+    num = IntegerField('最多提取关键词个数')
     method = SelectField('提取方法', choices=[('tfidf', 'tf-idf'), ('textrank', 'textrank')])
     pos = SelectMultipleField('选择关键词的词性（可用ctrl多选）',
         choices=[('pos_n', '名词'), ('pos_v', '动词'), ('pos_a', '形容词'), ('pos_d', '副词'), ('pos_z', '专名'), ('pos_o', '其他（成语、习用语等）')]
@@ -90,10 +90,12 @@ def result():
         pos_code = {'pos_a': ['Ag', 'a', 'ad', 'an'], 'pos_d': ['Dg', 'd'], 'pos_n': ['n', 'Ng'], 'pos_o': ['l', 'i'], 'pos_v': ['v', 'vn'], 'pos_z': ['nr', 'ns', 'nt', 'nz']}
         pos = []
         for p, l in pos_code.items():
-            if request.form['pos'] == p:
-                pos = pos + l
-        if pos == []:
-            pos = ['ns', 'n', 'vn', 'v']
+            if request.form['pos'] == None:
+                pos = ['ns', 'n', 'vn', 'v']
+                break;
+            else:
+                if request.form['pos'] == p:
+                    pos = pos + l
         keywords, network, vertice = analysis.text_processing(text, method=method, num=num, pos=pos)
         result = "'" + json.dumps(keywords, ensure_ascii=False) + "'"
     return render_template('result.html', keywords=result, vertice=vertice, network=network)
