@@ -7,6 +7,8 @@
 {{ super() }}
 <script language="javascript" src="http://lib.sinaapp.com/js/jquery/2.0.3/jquery-2.0.3.min.js"></script>
 <script language="javascript" src="/static/echarts-all.js"></script>
+<link href="/static/slider.css" rel="stylesheet">
+<script src="http://www.bootcss.com/p/metro-ui-css/js/modern/slider.js"></script>
 {% endblock %}
 
 {% block page_content %}
@@ -27,24 +29,24 @@
 <div class="row">
     <div class="col-sm-2">
         <label class="control-label" for="g">重力</label>
-        <input type="text" id="g" class="form-control" name="g" value="1.1"/>
+        <input type="text" id="g0" class="form-control" name="g" value="1.1"/>
+        <div class="slider" id="g" data-param-init-value="22" data-param-accuracy="0.1" style="width:165px;margin-top:10px"></div>
         <span id="helpBlock" class="help-block">节点聚集程度</span>
     </div>
     <div class="col-sm-2">
         <label class="control-label" for="s">缩放尺度</label>
-        <input type="text" id="s" class="form-control" name="s" value="1.1"/>
+        <input type="text" id="s0" class="form-control" name="s" value="1.1"/>
+        <div class="slider" id="s" data-param-init-value="22" data-param-accuracy="0.1" style="width:165px;margin-top:10px"></div>
         <span id="helpBlock" class="help-block">图形缩放程度</span>
     </div>
 </div>
-<button type="button" id="btn" class="btn btn-primary" name="btn" value="刷新"/>刷新</button>
-<br/><br/><br/>
+
 {% endblock %}
 
 {% block scripts %}
 <script src="{{bootstrap_find_resource('js/bootstrap.js', cdn='bootstrap')}}"></script>
 <script language="javascript">
 <!--
-/**************************************json*************************************/
 var str={{ keywords|safe }};
 $(document).ready(function(){
 	str=eval('(' + str + ')');
@@ -54,16 +56,36 @@ $(document).ready(function(){
 		$("#tab").append(text);
 	});
 	
-	draw();
+	draw(1.1,1.1);
+	var rate=20;
+	$("#g").on("change", function(e,v){
+		v=v/rate;
+		$("#g0").val(v.toFixed(2));
+		draw(v,$("#s0").val());
+	});
 	
-	$("#btn").click(function(){
-		draw();
+	$("#s").on("change", function(e,v){
+		v=v/rate;
+		$("#s0").val(v.toFixed(2));
+		draw($("#g0").val(),v);
+	});
+	
+	$("#g0").on("change", function(){
+		var g0=$("#g0").val();
+		var s0=$("#s0").val();
+		draw(g0,s0);
+		$('#g').data('slider').val(g0*rate);
+	});
+	
+	$("#s0").on("change", function(){
+		var g0=$("#g0").val();
+		var s0=$("#s0").val();
+		draw(g0,s0);
+		$('#s').data('slider').val(s0*rate);
 	});
 });
-/**************************************network*************************************/
-function draw(){
-var g=$("#g").val();
-var s=$("#s").val();
+
+function draw(g,s){
 var myChart = echarts.init(document.getElementById('network'));
 option = {
     title : {
@@ -71,14 +93,15 @@ option = {
         subtext: '节点大小表示关键词提及人数，线宽表示同时提及次数',
         x: 'left',
         y: 'top',
-	itemGap: 10,
+		itemGap: 10,
         textStyle: {
             fontSize: 24,
-            fontWeight: 'normal'
-	},
-	subtextStyle: {
-            fontSize: 15, 
-	}
+            fontWeight: 'normal',
+			fontFamily:'微软雅黑'
+		},
+		subtextStyle: {
+			fontSize: 15, 
+		}
     },
     tooltip : {
         trigger: 'item',
