@@ -75,7 +75,7 @@ def generate_network(words_list):
     return network, vertice
 
 def text_processing(text, method='tfidf', num=10, pos=['ns', 'n', 'vn', 'v']):
-    kw = extract_keywords(upper(text.strip()), method='tfidf', num=num, pos=pos)
+    kw = extract_keywords(text.strip().upper(), method='tfidf', num=num, pos=pos)
     filter_list = filter_words(kw, text)
     kw_count, kw_user = keywords_count(kw, filter_list, text)
     keywords = merge_keywords(kw, kw_count, kw_user)
