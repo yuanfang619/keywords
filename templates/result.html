@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}关键词抽取结果{% endblock %}
+{% block title %}分析结果{% endblock %}
 
 {% block head %} 
 {{ super() }}
@@ -13,19 +13,31 @@
 <div class="page-header">
     <h1 style="font-family:Microsoft YaHei">问卷开放题文本分析小工具（演示版）</h1>
 </div>
-<div style="width:500px">
-    <h4 style="font-family:Microsoft YaHei">关键词提取结果：</h4>
-	<table id="tab" class="table">
+<div class="table-responsive" style="width:45%">
+    <div class="bg-primary"><h3 style="font-family:Microsoft YaHei">关键词提取结果：</h3></div>
+	<table id="tab" class="table table-striped">
 		<tr>
                     <td>关键词</td><td>词频</td><td>提及人数</td><td>权重</td>
                 </tr>
 	</table>
    
 </div>
-<div id="network" style="width:80%;height:600px"></div>
-重力：<input type="text" id="g" name="g" value="1.1"/><br/>
-缩放尺度：<input type="text" id="s" name="s" value="1.1"/><br/>
-<input type="button" id="btn" name="btn" value="刷新"/>
+<hr/>
+<div id="network" style="width:80%;height:700px"></div>
+<div class="row">
+    <div class="col-sm-2">
+        <label class="control-label" for="g">重力</label>
+        <input type="text" id="g" class="form-control" name="g" value="1.1"/>
+        <span id="helpBlock" class="help-block">节点聚集程度</span>
+    </div>
+    <div class="col-sm-2">
+        <label class="control-label" for="s">缩放尺度</label>
+        <input type="text" id="s" class="form-control" name="s" value="1.1"/>
+        <span id="helpBlock" class="help-block">图形缩放程度</span>
+    </div>
+</div>
+<button type="button" id="btn" class="btn btn-primary" name="btn" value="刷新"/>刷新</button>
+<br/><br/><br/>
 {% endblock %}
 
 {% block scripts %}
@@ -56,19 +68,46 @@ var myChart = echarts.init(document.getElementById('network'));
 option = {
     title : {
         text: '关键词共现关系',
-        subtext: '两个关键词之间的关系表示被访者同时提及',
-        x:'left',
-        y:'top'
+        subtext: '节点大小表示关键词提及人数，线宽表示同时提及次数',
+        x: 'left',
+        y: 'top',
+	itemGap: 10,
+        textStyle: {
+            fontSize: 24,
+            fontWeight: 'normal'
+	},
+	subtextStyle: {
+            fontSize: 15, 
+	}
     },
     tooltip : {
         trigger: 'item',
-        formatter: '{a} : {b}'
+        formatter: '{b} : {c}次'
     },
     toolbox: {
         show : true,
         feature : {
             restore : {show: true},
-            magicType: {show: true, type: ['force', 'chord']},
+            magicType: {
+		show: true, 
+		type: ['force', 'chord'],
+		option: {
+		    chord: {
+			nodes:[
+			    {% for node, value in vertice.items()[:-1] %}
+                	    {name: '{{ node }}', value: '{{ value }}'},
+                	    {% endfor %}
+                	    {name: '{{ vertice.keys()[-1] }}', value: '{{ vertice.values()[-1] }}'}
+            	        ],
+            	        links : [
+              		    {% for edge, value in network.items()[:-1] %}
+              		    {source : '{{ edge[:edge.find('|')] }}', target : '{{ edge[edge.find('|')+1:] }}', weight : {{ value }}, value : {{ value }}, itemStyle: {normal: {lineWidth: {{ value }}}}},
+              		    {% endfor %}
+              		    {source : '{{ network.keys()[-1][:network.keys()[-1].find('|')] }}', target : '{{ network.keys()[-1][network.keys()[-1].find('|')+1:] }}', weight : {{ network.values()[-1] }}, value : {{ network.values()[-1] }}, itemStyle: {normal: {lineWidth: {{ network.values()[-1] }}}}}
+            	        ]
+		    }
+	    	}
+	    },
             saveAsImage : {show: true}
         }
     },
@@ -117,16 +156,16 @@ option = {
             scaling: s,
             roam: 'move',
             nodes:[
-                {% for node in vertice[:-1] %}
-                {category:0, name: '{{ node }}'},
+                {% for node, value in vertice.items()[:-1] %}
+                {category:0, name: '{{ node }}', value: '{{ value }}'},
                 {% endfor %}
-                {category:0, name: '{{ vertice[-1] }}'}
+                {category:0, name: '{{ vertice.keys()[-1] }}', value: '{{ vertice.values()[-1] }}'}
             ],
             links : [
               {% for edge, value in network.items()[:-1] %}
-              {source : '{{ edge[:edge.find('|')] }}', target : '{{ edge[edge.find('|')+1:] }}', weight : {{ value }}, itemStyle: {normal: {lineWidth: {{ value }}}}},
+              {source : '{{ edge[:edge.find('|')] }}', target : '{{ edge[edge.find('|')+1:] }}', weight : {{ value }}, value : {{ value }}, itemStyle: {normal: {lineWidth: {{ value }}}}},
               {% endfor %}
-              {source : '{{ network.keys()[-1][:network.keys()[-1].find('|')] }}', target : '{{ network.keys()[-1][network.keys()[-1].find('|')+1:] }}', weight : {{ network.values()[-1] }}, itemStyle: {normal: {lineWidth: {{ network.values()[-1] }}}}}
+              {source : '{{ network.keys()[-1][:network.keys()[-1].find('|')] }}', target : '{{ network.keys()[-1][network.keys()[-1].find('|')+1:] }}', weight : {{ network.values()[-1] }}, value : {{ network.values()[-1] }}, itemStyle: {normal: {lineWidth: {{ network.values()[-1] }}}}}
             ]
         }
     ]
