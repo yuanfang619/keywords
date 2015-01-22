@@ -34,8 +34,7 @@
             </div>
         </div>{% endblock %}
 
-{% block scripts %}<script language="javascript" src="{{ url_for('static', filename='echarts-all.js') }}"></script>
-        <script language="javascript">
+{% block scripts %}<script language="javascript">
 <!--
 var str={{ keywords|safe }};
 $(document).ready(function(){
