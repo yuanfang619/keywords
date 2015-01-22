@@ -8,10 +8,9 @@
         <script language="javascript" src="{{ url_for('static', filename='js/echarts-all.js') }}"></script>{% endblock %}
 
 {% block page_content %}<div class="page-header">
-            <h1 style="font-family:Microsoft YaHei">问卷开放题文本分析小工具（演示版）</h1>
+            <h2>分析结果</h2>
         </div>
         <div class="table-responsive" style="width:45%">
-        <div><h3 style="font-family:Microsoft YaHei">关键词提取结果：</h3></div>
             <table id="tab" class="table table-striped">
                 <tr>
                     <td>关键词</td><td>词频</td><td>提及人数</td><td>权重</td>
@@ -24,13 +23,13 @@
             <div class="col-sm-2">
                 <label class="control-label" for="g">重力</label>
                 <input type="text" id="g0" class="form-control" name="g" value="1.1"/>
-                <div class="slider" id="g" data-param-init-value="22" data-param-accuracy="0.1" style="width:165px;margin-top:10px"></div>
+                <div class="slider" id="g" data-param-init-value="22" data-param-accuracy="0.1" style="width:100%;margin-top:10px"></div>
                 <span id="helpBlock" class="help-block">节点聚集程度</span>
             </div>
             <div class="col-sm-2">
                 <label class="control-label" for="s">缩放尺度</label>
                 <input type="text" id="s0" class="form-control" name="s" value="1.1"/>
-                <div class="slider" id="s" data-param-init-value="22" data-param-accuracy="0.1" style="width:165px;margin-top:10px"></div>
+                <div class="slider" id="s" data-param-init-value="22" data-param-accuracy="0.1" style="width:100%;margin-top:10px"></div>
                 <span id="helpBlock" class="help-block">图形缩放程度</span>
             </div>
         </div>{% endblock %}

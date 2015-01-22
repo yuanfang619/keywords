@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>{% block html %}
+<html style="background-color:#d4dbdf">{% block html %}
     <head>{% block head %}
         <title>{% block title %}Keywordstitle{% endblock %}</title>
         {% block metas %}<meta name="viewport" content="width=device-width, initial-scale=1.0">{% endblock %}
@@ -9,7 +9,7 @@
         <script language="javascript" src="{{ url_for('static', filename='js/jquery-2.0.3.min.js') }}"></script>
         <script language="javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>{% endblock %}{% endblock %}
     </head>
-    <body>{% block body %}
+    <body style="font-family:'Helvetica Neue', STHeiti, 'Microsoft YaHei', Helvetica, Arial, sans-serif;">{% block body %}
         {% block navbar %}<div class="navbar navbar-inverse" role="navigation">
             <div class="container"> 
                 <div class="navbar-header"> 
@@ -19,10 +19,10 @@
                         <span class="icon-bar"></span> 
                         <span class="icon-bar"></span> 
                     </button> 
-                    <a class="navbar-brand" href="http://www.bjdataart.com" target="_blank"><img alt="Brand" src="{{ url_for('static', filename='logo2.png') }}" /></a> 
+                    <a class="navbar-brand" href="http://www.bjdataart.com" target="_blank"><img alt="Brand" src="{{ url_for('static', filename='logo2.png') }}"/></a> 
                 </div> 
                 <div class="navbar-collapse collapse"> 
-                    <ul class="nav navbar-nav" style="margin-top:10px"> 
+                    <ul class="nav navbar-nav" style="font-size:18px;margin-top:5px"> 
                         <li><a href="/">开始分析</a></li> 
                     </ul> 
                 </div> 
