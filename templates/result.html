@@ -3,86 +3,78 @@
 
 {% block title %}分析结果{% endblock %}
 
-{% block head %} 
-{{ super() }}
-<script language="javascript" src="http://lib.sinaapp.com/js/jquery/2.0.3/jquery-2.0.3.min.js"></script>
-<script language="javascript" src="/static/echarts-all.js"></script>
-<link href="/static/slider.css" rel="stylesheet">
-<script src="http://www.bootcss.com/p/metro-ui-css/js/modern/slider.js"></script>
-{% endblock %}
+{% block styles %}{{ super() }}
+        <link href="{{ url_for('static', filename='css/slider.css') }}" rel="stylesheet">
+        <script language="javascript" src="{{ url_for('static', filename='js/slider.js') }}"></script>
+        <script language="javascript" src="{{ url_for('static', filename='js/echarts.js') }}"></script>{% endblock %}
 
-{% block page_content %}
-<div class="page-header">
-    <h1 style="font-family:Microsoft YaHei">问卷开放题文本分析小工具（演示版）</h1>
-</div>
-<div class="table-responsive" style="width:45%">
-    <div class="bg-primary"><h3 style="font-family:Microsoft YaHei">关键词提取结果：</h3></div>
-	<table id="tab" class="table table-striped">
-		<tr>
+{% block page_content %}<div class="page-header">
+            <h1 style="font-family:Microsoft YaHei">问卷开放题文本分析小工具（演示版）</h1>
+        </div>
+        <div class="table-responsive" style="width:45%">
+        <div><h3 style="font-family:Microsoft YaHei">关键词提取结果：</h3></div>
+            <table id="tab" class="table table-striped">
+                <tr>
                     <td>关键词</td><td>词频</td><td>提及人数</td><td>权重</td>
                 </tr>
-	</table>
-   
-</div>
-<hr/>
-<div id="network" style="width:80%;height:700px"></div>
-<div class="row">
-    <div class="col-sm-2">
-        <label class="control-label" for="g">重力</label>
-        <input type="text" id="g0" class="form-control" name="g" value="1.1"/>
-        <div class="slider" id="g" data-param-init-value="22" data-param-accuracy="0.1" style="width:165px;margin-top:10px"></div>
-        <span id="helpBlock" class="help-block">节点聚集程度</span>
-    </div>
-    <div class="col-sm-2">
-        <label class="control-label" for="s">缩放尺度</label>
-        <input type="text" id="s0" class="form-control" name="s" value="1.1"/>
-        <div class="slider" id="s" data-param-init-value="22" data-param-accuracy="0.1" style="width:165px;margin-top:10px"></div>
-        <span id="helpBlock" class="help-block">图形缩放程度</span>
-    </div>
-</div>
+            </table>   
+        </div>
+        <div><hr/></div>
+        <div id="network" style="width:80%;height:700px"></div>
+        <div class="row">
+            <div class="col-sm-2">
+                <label class="control-label" for="g">重力</label>
+                <input type="text" id="g0" class="form-control" name="g" value="1.1"/>
+                <div class="slider" id="g" data-param-init-value="22" data-param-accuracy="0.1" style="width:165px;margin-top:10px"></div>
+                <span id="helpBlock" class="help-block">节点聚集程度</span>
+            </div>
+            <div class="col-sm-2">
+                <label class="control-label" for="s">缩放尺度</label>
+                <input type="text" id="s0" class="form-control" name="s" value="1.1"/>
+                <div class="slider" id="s" data-param-init-value="22" data-param-accuracy="0.1" style="width:165px;margin-top:10px"></div>
+                <span id="helpBlock" class="help-block">图形缩放程度</span>
+            </div>
+        </div>{% endblock %}
 
-{% endblock %}
-
-{% block scripts %}
-<script src="{{bootstrap_find_resource('js/bootstrap.js', cdn='bootstrap')}}"></script>
-<script language="javascript">
+{% block scripts %}<script language="javascript" src="{{ url_for('static', filename='echarts-all.js') }}"></script>
+        <script language="javascript">
 <!--
 var str={{ keywords|safe }};
 $(document).ready(function(){
-	str=eval('(' + str + ')');
-	$.each(str,function(i,data){
-		var text="";
-		text="<tr><td width='60'>"+i+"</td><td width='60'>"+data.count+"</td><td width='60'>"+data.user_num+"</td><td width='100'>"+data.weight+"</td></tr>";
-		$("#tab").append(text);
-	});
-	
-	draw(1.1,1.1);
-	var rate=20;
-	$("#g").on("change", function(e,v){
-		v=v/rate;
-		$("#g0").val(v.toFixed(2));
-		draw(v,$("#s0").val());
-	});
-	
-	$("#s").on("change", function(e,v){
-		v=v/rate;
-		$("#s0").val(v.toFixed(2));
-		draw($("#g0").val(),v);
-	});
-	
-	$("#g0").on("change", function(){
-		var g0=$("#g0").val();
-		var s0=$("#s0").val();
-		draw(g0,s0);
-		$('#g').data('slider').val(g0*rate);
-	});
-	
-	$("#s0").on("change", function(){
-		var g0=$("#g0").val();
-		var s0=$("#s0").val();
-		draw(g0,s0);
-		$('#s').data('slider').val(s0*rate);
-	});
+    str=eval('(' + str + ')');
+    $.each(str,function(i,data){
+        var text="";
+        text="<tr><td width='60'>"+i+"</td><td width='60'>"+data.count+"</td><td width='60'>"+data.user_num+"</td><td width='100'>"+data.weight+"</td></tr>";
+        $("#tab").append(text);
+    });
+    
+    draw(1.1,1.1);
+    var rate=20;
+    $("#g").on("change", function(e,v){
+        v=v/rate;
+        $("#g0").val(v.toFixed(2));
+        draw(v,$("#s0").val());
+    });
+    
+    $("#s").on("change", function(e,v){
+        v=v/rate;
+        $("#s0").val(v.toFixed(2));
+        draw($("#g0").val(),v);
+    });
+    
+    $("#g0").on("change", function(){
+        var g0=$("#g0").val();
+        var s0=$("#s0").val();
+        draw(g0,s0);
+        $('#g').data('slider').val(g0*rate);
+    });
+    
+    $("#s0").on("change", function(){
+        var g0=$("#g0").val();
+        var s0=$("#s0").val();
+        draw(g0,s0);
+        $('#s').data('slider').val(s0*rate);
+    });
 });
 
 function draw(g,s){
@@ -93,15 +85,15 @@ option = {
         subtext: '节点大小表示关键词提及人数，线宽表示同时提及次数',
         x: 'left',
         y: 'top',
-		itemGap: 10,
+        itemGap: 10,
         textStyle: {
             fontSize: 24,
             fontWeight: 'normal',
-			fontFamily:'微软雅黑'
-		},
-		subtextStyle: {
-			fontSize: 15, 
-		}
+            fontFamily:'微软雅黑'
+        },
+        subtextStyle: {
+            fontSize: 15, 
+        }
     },
     tooltip : {
         trigger: 'item',
@@ -112,25 +104,25 @@ option = {
         feature : {
             restore : {show: true},
             magicType: {
-		show: true, 
-		type: ['force', 'chord'],
-		option: {
-		    chord: {
-			nodes:[
-			    {% for node, value in vertice.items()[:-1] %}
-                	    {name: '{{ node }}', value: '{{ value }}'},
-                	    {% endfor %}
-                	    {name: '{{ vertice.keys()[-1] }}', value: '{{ vertice.values()[-1] }}'}
-            	        ],
-            	        links : [
-              		    {% for edge, value in network.items()[:-1] %}
-              		    {source : '{{ edge[:edge.find('|')] }}', target : '{{ edge[edge.find('|')+1:] }}', weight : {{ value }}, value : {{ value }}, itemStyle: {normal: {lineWidth: {{ value }}}}},
-              		    {% endfor %}
-              		    {source : '{{ network.keys()[-1][:network.keys()[-1].find('|')] }}', target : '{{ network.keys()[-1][network.keys()[-1].find('|')+1:] }}', weight : {{ network.values()[-1] }}, value : {{ network.values()[-1] }}, itemStyle: {normal: {lineWidth: {{ network.values()[-1] }}}}}
-            	        ]
-		    }
-	    	}
-	    },
+        show: true, 
+        type: ['force', 'chord'],
+        option: {
+            chord: {
+            nodes:[
+                {% for node, value in vertice.items()[:-1] %}
+                        {name: '{{ node }}', value: '{{ value }}'},
+                        {% endfor %}
+                        {name: '{{ vertice.keys()[-1] }}', value: '{{ vertice.values()[-1] }}'}
+                        ],
+                        links : [
+                        {% for edge, value in network.items()[:-1] %}
+                        {source : '{{ edge[:edge.find('|')] }}', target : '{{ edge[edge.find('|')+1:] }}', weight : {{ value }}, value : {{ value }}, itemStyle: {normal: {lineWidth: {{ value }}}}},
+                        {% endfor %}
+                        {source : '{{ network.keys()[-1][:network.keys()[-1].find('|')] }}', target : '{{ network.keys()[-1][network.keys()[-1].find('|')+1:] }}', weight : {{ network.values()[-1] }}, value : {{ network.values()[-1] }}, itemStyle: {normal: {lineWidth: {{ network.values()[-1] }}}}}
+                        ]
+            }
+            }
+        },
             saveAsImage : {show: true}
         }
     },
@@ -197,5 +189,4 @@ option = {
 myChart.setOption(option);
 }
 -->
-</script>
-{% endblock %}
+        </script>{% endblock %}
