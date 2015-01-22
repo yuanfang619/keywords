@@ -4,7 +4,6 @@ import sys
 #import os
 from flask import Flask, render_template, session, redirect, url_for, request
 from flask.ext.script import Manager
-from flask.ext.bootstrap import Bootstrap
 from flask.ext.wtf import Form
 from wtforms import TextAreaField, SubmitField, IntegerField, SelectField, SelectMultipleField
 from flask_wtf.file import FileField
@@ -25,7 +24,6 @@ ALLOWED_EXTENSIONS = set(['txt'])
 
 app = Flask(__name__)
 manager = Manager(app)
-bootstrap = Bootstrap(app)
 app.config['SECRET_KEY'] = 'hard to guess string'
 #app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
